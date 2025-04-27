@@ -1,6 +1,6 @@
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-
+import { loadTodos, removeTodo, saveTodo, toggleTodo } from "../store/todo.actions.js"
 const { useState, useEffect } = React
 const { useNavigate, useParams } = ReactRouterDOM
 
@@ -34,6 +34,10 @@ export function TodoEdit() {
                 value = target.checked
                 break
 
+            case 'color':
+                value = target.value
+                break
+
             default:
                 break
         }
@@ -54,7 +58,7 @@ export function TodoEdit() {
             })
     }
 
-    const { txt, importance, isDone } = todoToEdit
+    const { txt, importance, isDone, color } = todoToEdit
 
     return (
         <section className="todo-edit">
@@ -68,7 +72,13 @@ export function TodoEdit() {
                 <label htmlFor="isDone">isDone:</label>
                 <input onChange={handleChange} value={isDone} type="checkbox" name="isDone" id="isDone" />
 
-
+                <label htmlFor="color">Color:</label>
+                <input
+                    type="color"
+                    value={color || '#99a695'}
+                    onChange={handleChange}
+                    name="color"
+                />
                 <button>Save</button>
             </form>
         </section>

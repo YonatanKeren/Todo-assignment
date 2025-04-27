@@ -29,6 +29,11 @@ function query(filterBy = {}) {
                 todos = todos.filter(todo => todo.importance >= filterBy.importance)
             }
 
+            if (filterBy.status && filterBy.status !== 'All') {
+                const isDone = (filterBy.status === 'Done')
+                todos = todos.filter(todo => todo.isDone === isDone)
+            }
+
             return todos
         })
 }
@@ -45,7 +50,7 @@ function remove(todoId) {
     return storageService.remove(TODO_KEY, todoId)
 }
 
-function save(todo) {
+function save(todo) { 
     if (todo._id) {
         // TODO - updatable fields
         todo.updatedAt = Date.now()
@@ -62,14 +67,14 @@ function getEmptyTodo(txt = '', importance = 5) {
 }
 
 function getDefaultFilter() {
-    return { txt: '', importance: 0 }
+    return { txt: '', importance: 0 , status: "All"}
 }
 
 function getFilterFromSearchParams(searchParams) {
     const defaultFilter = getDefaultFilter()
     const filterBy = {}
     for (const field in defaultFilter) {
-        filterBy[field] = searchParams.get(field) || ''
+        filterBy[field] = searchParams.get(field) || defaultFilter[field]
     }
     return filterBy
 }

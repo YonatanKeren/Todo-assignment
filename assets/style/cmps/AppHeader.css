@@ -26,6 +26,15 @@ a.active {
     text-decoration: underline;
 }
 
+.app-header .progress-bar {
+    width: 50%;
+}
+
+.app-header .progress-bar progress {
+    width: 80%;
+}
+
+
 
 @media (max-width: 720px) {
     .app-header {

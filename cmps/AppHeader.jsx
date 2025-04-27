@@ -1,6 +1,7 @@
 const { useState } = React
 const { Link, NavLink } = ReactRouterDOM
 const { useNavigate } = ReactRouter
+const { useSelector } = ReactRedux
 
 import { userService } from '../services/user.service.js'
 import { UserMsg } from "./UserMsg.jsx"
@@ -9,6 +10,8 @@ import { showErrorMsg } from '../services/event-bus.service.js'
 
 
 export function AppHeader() {
+
+    const todos = useSelector(state => state.todos)
     const navigate = useNavigate()
     const [user, setUser] = useState(userService.getLoggedinUser())
     
@@ -26,10 +29,18 @@ export function AppHeader() {
         setUser(user)
         navigate('/')
     }
+
+    const doneTodos = todos.filter(todo => todo.isDone).length
+    const progress = todos.length > 0 ? ( doneTodos / todos.length)*100 : 0
+
+
     return (
         <header className="app-header full main-layout">
             <section className="header-container">
                 <h1>React Todo App</h1>
+                <section className='progress-bar'>
+                    <progress value={progress} max="100"></progress>
+                </section>
                 {user ? (
                     < section >
                         <Link to={`/user/${user._id}`}>Hello {user.fullname}</Link>
