@@ -38,8 +38,9 @@ export function AppHeader() {
         <header className="app-header full main-layout">
             <section className="header-container">
                 <h1>React Todo App</h1>
-                <section className='progress-bar'>
+                <section className='progress-bar'>      
                     <progress value={progress} max="100"></progress>
+                    <p>{Math.round(progress)}%</p>
                 </section>
                 {user ? (
                     < section >
