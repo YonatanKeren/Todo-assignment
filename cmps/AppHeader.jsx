@@ -7,14 +7,16 @@ import { userService } from '../services/user.service.js'
 import { UserMsg } from "./UserMsg.jsx"
 import { LoginSignup } from './LoginSignup.jsx'
 import { showErrorMsg } from '../services/event-bus.service.js'
+import { TodosProgress } from './TodosProgress.jsx'
 
 
 export function AppHeader() {
 
-    const todos = useSelector(state => state.todos)
+    const todos = useSelector(state => state.todoModule.todos)
+    const doneTodosPercent = useSelector((storeState) => storeState.todoModule.doneTodosPercent)
     const navigate = useNavigate()
     const [user, setUser] = useState(userService.getLoggedinUser())
-    
+
     function onLogout() {
         userService.logout()
             .then(() => {
@@ -31,17 +33,16 @@ export function AppHeader() {
     }
 
     const doneTodos = todos.filter(todo => todo.isDone).length
-    const progress = todos.length > 0 ? ( doneTodos / todos.length)*100 : 0
+    const progress = todos.length > 0 ? (doneTodos / todos.length) * 100 : 0
 
 
     return (
         <header className="app-header full main-layout">
             <section className="header-container">
                 <h1>React Todo App</h1>
-                <section className='progress-bar'>      
-                    <progress value={progress} max="100"></progress>
-                    <p>{Math.round(progress)}%</p>
-                </section>
+                {todos &&
+                    <TodosProgress doneTodosPercent={doneTodosPercent} />
+                }
                 {user ? (
                     < section >
                         <Link to={`/user/${user._id}`}>Hello {user.fullname}</Link>

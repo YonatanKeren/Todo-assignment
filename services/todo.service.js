@@ -2,6 +2,7 @@ import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
 
 const TODO_KEY = 'todoDB'
+const PAGE_SIZE = 5
 _createTodos()
 
 export const todoService = {
@@ -34,7 +35,15 @@ function query(filterBy = {}) {
                 todos = todos.filter(todo => todo.isDone === isDone)
             }
 
-            return todos
+            const filteredTodosLength = todos.length
+            if (filterBy.pageIdx !== undefined) {
+                const startIdx = filterBy.pageIdx * PAGE_SIZE;
+                todos = todos.slice(startIdx, startIdx + PAGE_SIZE)
+            }
+            return Promise.all([getDoneTodosPercent(), getMaxPage(filteredTodosLength)])
+                .then(([doneTodosPercent, maxPage]) => {
+                    return { todos, maxPage, doneTodosPercent }
+                })
         })
 }
 
@@ -62,12 +71,39 @@ function save(todo) {
     }
 }
 
+function getMaxPage(filteredTodosLength) {
+    if (filteredTodosLength) return Promise.resolve(Math.ceil(filteredTodosLength / PAGE_SIZE))
+
+    return storageService.query(TODO_KEY)
+        .then(todos => Math.ceil(todos.length / PAGE_SIZE))
+        .catch(err => {
+            console.error('Cannot get max page:', err)
+            throw err
+        })
+}
+
+function getDoneTodosPercent() {
+    return storageService.query(TODO_KEY)
+        .then(todos => {
+            const doneTodosCount = todos.reduce((acc, todo) => {
+                if (todo.isDone) acc++
+                return acc
+            }, 0)
+
+            return (doneTodosCount / todos.length) * 100 || 0
+        })
+        .catch(err => {
+            console.error('Cannot get done todos percent:', err)
+            throw err
+        })
+}
+
 function getEmptyTodo(txt = '', importance = 5) {
     return { txt, importance, isDone: false }
 }
 
 function getDefaultFilter() {
-    return { txt: '', importance: 0 , status: "All"}
+    return { txt: '', importance: 0 , status: "All", pageIdx: 0 }
 }
 
 function getFilterFromSearchParams(searchParams) {

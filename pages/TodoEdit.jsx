@@ -1,6 +1,6 @@
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { loadTodos, removeTodo, saveTodo, toggleTodo } from "../store/todo.actions.js"
+import { loadTodos, removeTodo, saveTodo, toggleTodo } from "../store/actions/todo.actions.js"
 const { useState, useEffect } = React
 const { useNavigate, useParams } = ReactRouterDOM
 
